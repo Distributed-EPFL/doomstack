@@ -91,7 +91,7 @@ impl Debug for Entry {
         } else {
             write!(f, "[{}] {}", self.tag, self.description)?;
         }
-        
+
         Ok(())
     }
 }
