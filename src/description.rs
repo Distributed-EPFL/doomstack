@@ -30,18 +30,12 @@ impl From<String> for Description {
 
 impl Display for Description {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            Description::Static(description) => write!(f, "{}", description),
-            Description::Dynamic(description) => write!(f, "{}", description),
-        }
+        write!(f, "{}", self.as_str())
     }
 }
 
 impl Debug for Description {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        match self {
-            Description::Static(description) => write!(f, "{:?}", description),
-            Description::Dynamic(description) => write!(f, "{:?}", description),
-        }
+        write!(f, "{:?}", self.as_str())
     }
 }
