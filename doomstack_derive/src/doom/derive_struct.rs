@@ -60,13 +60,27 @@ pub(crate) fn derive_struct(name: Ident, attrs: Vec<Attribute>, data: DataStruct
                     STORE.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
                 }
 
-                fn store() -> usize {
+                fn store() -> bool {
                     STORE.load(std::sync::atomic::Ordering::Relaxed) > 0
                 }
 
                 #variant
                 #description
             }
+
+            impl std::fmt::Display for #name {
+                fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+                    write!(f, "{}", Doom::description(self))
+                }
+            }
+
+            impl std::fmt::Debug for #name {
+                fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+                    write!(f, "{}", Doom::description(self))
+                }
+            }
+
+            impl std::error::Error for #name {}
         };
     };
 
