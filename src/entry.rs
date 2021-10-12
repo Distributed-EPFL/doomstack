@@ -7,7 +7,7 @@ use std::fmt::{Debug, Display, Formatter};
 use std::sync::Arc;
 
 #[derive(Clone)]
-pub struct Frame {
+pub struct Entry {
     tag: &'static str,
     description: Description,
     location: Option<(&'static str, u32)>,
@@ -17,12 +17,12 @@ pub struct Frame {
     original: Option<Arc<dyn Any>>,
 }
 
-impl Frame {
+impl Entry {
     pub(crate) fn new<D>(doom: &D) -> Self
     where
         D: Doom,
     {
-        Frame {
+        Entry {
             tag: D::VARIANTS[doom.variant()],
             description: doom.description(),
             location: None,
@@ -73,13 +73,13 @@ impl Frame {
     }
 }
 
-impl Display for Frame {
+impl Display for Entry {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         write!(f, "{}", self.tag)
     }
 }
 
-impl Debug for Frame {
+impl Debug for Entry {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
         if let Some(location) = self.location {
             write!(

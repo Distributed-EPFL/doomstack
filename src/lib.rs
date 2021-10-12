@@ -1,7 +1,7 @@
 mod description;
 mod doom;
-mod frame;
+mod entry;
 
 pub use description::Description;
 pub use doom::Doom;
-pub use frame::Frame;
+pub use entry::Entry;
