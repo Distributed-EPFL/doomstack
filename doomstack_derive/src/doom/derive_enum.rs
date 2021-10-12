@@ -12,6 +12,7 @@ use syn::{DataEnum, Fields, Ident, LitStr};
 
 pub(crate) fn derive_enum(name: Ident, data: DataEnum) -> TokenStream {
     let mut variant_idents = Vec::new();
+    let mut variant_fields = Vec::new();
     let mut configurations = Vec::new();
 
     for variant in data.variants {
@@ -24,6 +25,7 @@ pub(crate) fn derive_enum(name: Ident, data: DataEnum) -> TokenStream {
         let configuration = Configuration::new(&variant.attrs, &fields);
 
         variant_idents.push(variant.ident);
+        variant_fields.push(fields);
         configurations.push(configuration);
     }
 
@@ -87,6 +89,41 @@ pub(crate) fn derive_enum(name: Ident, data: DataEnum) -> TokenStream {
         }
     };
 
+    let wrap_constructors = configurations
+        .iter()
+        .filter_map(|configuration| configuration.wrap.as_ref())
+        .map(|wrap| &wrap.constructor)
+        .collect::<Vec<_>>();
+
+    let distinct_wrap_constructors = wrap_constructors.iter().collect::<HashSet<_>>();
+
+    if distinct_wrap_constructors.len() < wrap_constructors.len() {
+        panic!("multiple items are `wrap`ed by the same constructor");
+    }
+
+    let wraps = variant_idents
+        .iter()
+        .zip(variant_fields.iter())
+        .zip(configurations.iter())
+        .map(
+            |((variant, fields), configuration)| match &configuration.wrap {
+                Some(wrap) => {
+                    let constructor = &wrap.constructor;
+
+                    let field = fields.as_ref().unwrap().named.first().unwrap();
+                    let field_ident = field.ident.as_ref().unwrap();
+                    let field_ty = &field.ty;
+
+                    quote! {
+                        fn #constructor(#field_ident: #field_ty) -> Self {
+                            #name::#variant { #field_ident }
+                        }
+                    }
+                }
+                None => quote! {},
+            },
+        );
+
     let derive = quote! {
         const _: () = {
             static STORE: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
@@ -123,6 +160,10 @@ pub(crate) fn derive_enum(name: Ident, data: DataEnum) -> TokenStream {
             }
 
             impl std::error::Error for #name {}
+
+            impl #name {
+                #(#wraps)*
+            }
         };
     };
 
