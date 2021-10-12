@@ -80,7 +80,7 @@ impl Configuration {
         }
 
         match &config_wrap {
-            Some(wrap) => {
+            Some(_) => {
                 let fields = match fields {
                     Some(fields) => fields,
                     None => panic!("unexpected `wrap` on unit item"),

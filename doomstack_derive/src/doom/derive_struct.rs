@@ -45,6 +45,25 @@ pub(crate) fn derive_struct(name: Ident, attrs: Vec<Attribute>, data: DataStruct
         }
     };
 
+    let wrap = match configuration.wrap {
+        Some(wrap) => {
+            let constructor = &wrap.constructor;
+
+            let field = fields.as_ref().unwrap().named.first().unwrap();
+            let field_ident = field.ident.as_ref().unwrap();
+            let field_ty = &field.ty;
+
+            quote! {
+                fn #constructor(#field_ident: #field_ty) -> Self {
+                    #name { #field_ident }
+                }
+            }
+        }
+        None => {
+            quote! {}
+        }
+    };
+
     let derive = quote! {
         const _: () = {
             static STORE: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
@@ -81,6 +100,10 @@ pub(crate) fn derive_struct(name: Ident, attrs: Vec<Attribute>, data: DataStruct
             }
 
             impl std::error::Error for #name {}
+
+            impl #name {
+                #wrap
+            }
         };
     };
 
