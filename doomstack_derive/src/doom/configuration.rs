@@ -1,9 +1,10 @@
-use crate::doom::{Description, Property};
+use crate::doom::{Description, Property, Wrap};
 
 use syn::{parse, Attribute, FieldsNamed};
 
 pub(crate) struct Configuration {
     pub description: Description,
+    pub wrap: Option<Wrap>,
 }
 
 impl Configuration {
@@ -17,6 +18,7 @@ impl Configuration {
                 });
 
         let mut config_description: Option<Description> = None;
+        let mut config_wrap: Option<Wrap> = None;
 
         for property in properties {
             match property {
@@ -38,6 +40,13 @@ impl Configuration {
                         });
                     } else {
                         panic!("multiple `description`s for the same item");
+                    }
+                }
+                Property::Wrap { constructor } => {
+                    if config_wrap.is_none() {
+                        config_wrap = Some(Wrap { constructor });
+                    } else {
+                        panic!("multiple `wrap`s for the same item");
                     }
                 }
             }
@@ -70,8 +79,23 @@ impl Configuration {
             Description::Static { .. } => {}
         }
 
+        match &config_wrap {
+            Some(wrap) => {
+                let fields = match fields {
+                    Some(fields) => fields,
+                    None => panic!("unexpected `wrap` on unit item"),
+                };
+
+                if fields.named.len() != 1 {
+                    panic!("`wrap` can be called only on single-field items");
+                }
+            }
+            None => {}
+        }
+
         Configuration {
             description: config_description,
+            wrap: config_wrap,
         }
     }
 }
