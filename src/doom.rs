@@ -1,6 +1,8 @@
 use crate::Description;
 
-pub trait Doom: 'static + Sized {
+use std::error;
+
+pub trait Doom: error::Error + 'static + Sized {
     const VARIANTS: &'static [&'static str];
 
     fn acquire();
