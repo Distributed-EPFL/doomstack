@@ -1,4 +1,4 @@
-use crate::Entry;
+use crate::{Doom, Entry, Top};
 
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
@@ -9,7 +9,7 @@ pub struct Stack {
 }
 
 impl Stack {
-    pub fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Stack {
             entries: Vec::new(),
         }
@@ -17,6 +17,25 @@ impl Stack {
 
     pub fn entries(&self) -> &[Entry] {
         self.entries.as_slice()
+    }
+
+    pub(crate) fn store<D>(mut self, doom: D) -> Self
+    where
+        D: Doom,
+    {
+        let last = self.entries.pop().unwrap();
+        self.entries.push(last.store(doom));
+        
+        self
+    }
+
+    pub fn push<D>(mut self, doom: D) -> Top<D>
+    where
+        D: Doom,
+    {
+        let entry = Entry::new(&doom);
+        self.entries.push(entry);
+        Top::new(doom, self)
     }
 
     pub fn spot(mut self, location: (&'static str, u32)) -> Self {
