@@ -25,7 +25,7 @@ impl Stack {
     {
         let last = self.entries.pop().unwrap();
         self.entries.push(last.store(doom));
-        
+
         self
     }
 
@@ -39,36 +39,24 @@ impl Stack {
     }
 
     pub fn spot(mut self, location: (&'static str, u32)) -> Self {
-        let last = self.entries.pop();
-
-        let last = match last {
-            Some(last) => last.spot(location),
-            None => panic!("called `spot` on an empty `Stack`"),
-        };
-
+        let last = self.entries.pop().unwrap();
+        let last = last.spot(location);
         self.entries.push(last);
+
         self
     }
 }
 
 impl Display for Stack {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        if self.entries.is_empty() {
-            write!(f, "<empty>")
-        } else {
-            write!(f, "<top: {}>", self.entries.last().unwrap())
-        }
+        write!(f, "<top: {}>", self.entries.last().unwrap())
     }
 }
 
 impl Debug for Stack {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {
-        if self.entries.is_empty() {
-            write!(f, "<empty>")?;
-        } else {
-            for frame in self.entries.iter().rev() {
-                writeln!(f, "{:?}", frame)?;
-            }
+        for frame in self.entries.iter().rev() {
+            writeln!(f, "{:?}", frame)?;
         }
 
         Ok(())
