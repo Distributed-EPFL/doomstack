@@ -2,8 +2,6 @@ use crate::doom::{derive_enum, derive_struct};
 
 use proc_macro::TokenStream;
 
-use quote::quote;
-
 use syn::{Data, DeriveInput};
 
 pub(crate) fn doom(input: TokenStream) -> TokenStream {

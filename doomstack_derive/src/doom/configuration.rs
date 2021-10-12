@@ -1,6 +1,6 @@
 use crate::doom::{Description, Property};
 
-use syn::{parse, Attribute, FieldsNamed, Ident, LitStr};
+use syn::{parse, Attribute, FieldsNamed};
 
 pub(crate) struct Configuration {
     pub description: Description,
