@@ -12,3 +12,5 @@ pub use entry::Entry;
 pub use result_ext::ResultExt;
 pub use stack::Stack;
 pub use top::Top;
+
+pub use doomstack_derive::Doom;
