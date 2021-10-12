@@ -64,6 +64,13 @@ impl Frame {
     pub fn variants(&self) -> &'static [&'static str] {
         self.variants
     }
+
+    pub fn original(&self) -> Option<&dyn Any> {
+        match &self.original {
+            Some(original) => Some(original.as_ref()),
+            None => None,
+        }
+    }
 }
 
 impl Display for Frame {
