@@ -14,7 +14,7 @@ pub struct Entry {
 
     type_id: TypeId,
     variants: &'static [&'static str],
-    original: Option<Arc<dyn error::Error + 'static>>,
+    original: Option<Arc<dyn error::Error + 'static + Send + Sync>>,
 }
 
 impl Entry {
@@ -66,7 +66,7 @@ impl Entry {
         self.variants
     }
 
-    pub fn original(&self) -> Option<&(dyn error::Error + 'static)> {
+    pub fn original(&self) -> Option<&(dyn error::Error + 'static + Send + Sync)> {
         match &self.original {
             Some(original) => Some(original.as_ref()),
             None => None,
