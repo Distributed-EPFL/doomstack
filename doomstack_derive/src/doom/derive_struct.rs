@@ -54,7 +54,7 @@ pub(crate) fn derive_struct(name: Ident, attrs: Vec<Attribute>, data: DataStruct
             let field_ty = &field.ty;
 
             quote! {
-                fn #constructor(#field_ident: #field_ty) -> Self {
+                pub fn #constructor(#field_ident: #field_ty) -> Self {
                     #name { #field_ident }
                 }
             }

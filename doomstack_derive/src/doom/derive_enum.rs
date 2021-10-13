@@ -115,7 +115,7 @@ pub(crate) fn derive_enum(name: Ident, data: DataEnum) -> TokenStream {
                     let field_ty = &field.ty;
 
                     quote! {
-                        fn #constructor(#field_ident: #field_ty) -> Self {
+                        pub fn #constructor(#field_ident: #field_ty) -> Self {
                             #name::#variant { #field_ident }
                         }
                     }
