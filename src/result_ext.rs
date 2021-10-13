@@ -6,6 +6,10 @@ pub trait ResultExt<O> {
         D: Doom;
 
     fn spot(self, location: (&'static str, u32)) -> Self;
+
+    fn pot<D>(self, doom: D, location: (&'static str, u32)) -> Result<O, Top<D>>
+    where
+        D: Doom;
 }
 
 impl<O> ResultExt<O> for Result<O, Stack> {
@@ -18,6 +22,13 @@ impl<O> ResultExt<O> for Result<O, Stack> {
 
     fn spot(self, location: (&'static str, u32)) -> Self {
         self.map_err(|error| error.spot(location))
+    }
+
+    fn pot<D>(self, doom: D, location: (&'static str, u32)) -> Result<O, Top<D>>
+    where
+        D: Doom,
+    {
+        self.push(doom).spot(location)
     }
 }
 
@@ -34,5 +45,12 @@ where
 
     fn spot(self, location: (&'static str, u32)) -> Self {
         self.map_err(|error| error.spot(location))
+    }
+
+    fn pot<D>(self, doom: D, location: (&'static str, u32)) -> Result<O, Top<D>>
+    where
+        D: Doom,
+    {
+        self.push(doom).spot(location)
     }
 }
